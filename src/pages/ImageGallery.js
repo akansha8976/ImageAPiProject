@@ -111,23 +111,25 @@ function ImageGallery() {
           </>
         )}
 
-        <div className="container mt-0">
-          <div className="row justify-content-end">
-            <div className="col-md-5">
-              <Pagination
-                activePage={page}
-                itemsCountPerPage={perPage}
-                totalItemsCount={totalPages * perPage}
-                pageRangeDisplayed={5}
-                onChange={handlePageChange}
-                itemClass="page-item"
-                linkClass="page-link"
-                prevPageText="Previous"
-                nextPageText="Next"
-              />
+        {!loading && (
+          <div className="container mt-0">
+            <div className="row justify-content-end">
+              <div className="col-md-5">
+                <Pagination
+                  activePage={page}
+                  itemsCountPerPage={perPage}
+                  totalItemsCount={totalPages * perPage}
+                  pageRangeDisplayed={5}
+                  onChange={handlePageChange}
+                  itemClass="page-item"
+                  linkClass="page-link"
+                  prevPageText="Previous"
+                  nextPageText="Next"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
