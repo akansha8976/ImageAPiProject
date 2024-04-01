@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Loading from "../components/Loading";
-import { fetchPhotoById } from "../components/ApiFunctions";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import Loading from "../components/Loader";
+import { getPhotoById } from "../components/ApiCalling";
 
 function ImageDetails() {
   const { id } = useParams();
+
   const navigate = useNavigate();
 
   const [photo, setPhoto] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const searchParams = new URLSearchParams(window.location.search);
+  const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("query");
-  console.log("=========searchQuery============", searchQuery);
-
   useEffect(() => {
     setLoading(true);
     const fetchPhoto = async () => {
       try {
-        const data = await fetchPhotoById(id);
+        const data = await getPhotoById(id);
         setPhoto(data);
       } catch (error) {
         console.error(error);
@@ -30,7 +29,7 @@ function ImageDetails() {
   }, [id]);
 
   const handleBackClick = () => {
-    navigate(`/gallery?query=${searchQuery}`);
+    navigate(`/?query=${searchQuery}`);
   };
 
   return (
@@ -42,13 +41,9 @@ function ImageDetails() {
             <Loading />
           ) : (
             <img
+              className="img-details"
               src={photo.src?.large}
               alt={photo.photographer}
-              style={{
-                width: "600px",
-                height: "400px",
-                objectFit: "cover",
-              }}
             />
           )}
         </div>
@@ -56,6 +51,7 @@ function ImageDetails() {
           <div className="card-body">
             <h3 className="card-title">Photographer: {photo.photographer}</h3>
             <br />
+
             <p className="card-text">
               Attribute : <span className="text-secondary">{photo.alt}</span>{" "}
             </p>
