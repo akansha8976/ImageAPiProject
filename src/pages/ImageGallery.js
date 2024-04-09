@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Pagination from "react-js-pagination";
-import Loading from "../components/Loader";
-import { getPhotos } from "../components/ApiCalling";
+import Loading from "../components/loader";
+import { getPhotos } from "../api/image.api";
 
 function ImageGallery() {
+  const [searchParams1, setSearchParams1] = useSearchParams();
+  const [errorMessage, setErrorMessage] = useState("");
   const [photos, setPhotos] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
-  const [perPage, setPerPage] = useState(18);
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query");
   const [searchQuery, setSearchQuery] = useState(query || "cats");
-
+  const navigate = useNavigate();
+  const perPage = 18;
   const fetchImages = async () => {
     setLoading(true);
     try {
@@ -23,7 +24,7 @@ function ImageGallery() {
       setPhotos(data.photos);
       setTotalPages(Math.ceil(data.total_results / perPage));
     } catch (error) {
-      console.error(error);
+      setErrorMessage(error.message);
     } finally {
       setLoading(false);
     }
@@ -33,25 +34,44 @@ function ImageGallery() {
     fetchImages();
   }, [page, perPage, searchQuery]);
 
+  // const handleSearch = () => {
+  //   const trimmedSearchInput = searchInput.trim();
+  //   setSearchQuery(trimmedSearchInput);
+  //   setPage(1);
+  //   if (trimmedSearchInput.length !== 0) {
+  //     navigate(`/?query=${trimmedSearchInput}`);
+  //   } else {
+  //     navigate("/");
+  //   }
+  // };
+
   const handleSearch = () => {
     const trimmedSearchInput = searchInput.trim();
     setSearchQuery(trimmedSearchInput);
     setPage(1);
+
+    // const [searchParams, setSearchParams] = useSearchParams();
+
     if (trimmedSearchInput.length !== 0) {
-      navigate(`/?query=${trimmedSearchInput}`);
+      setSearchParams1({ query: trimmedSearchInput });
     } else {
-      navigate("/");
+      setSearchParams1({});
     }
   };
-
   const handlePageChange = (pageNumber) => {
+    if (!pageNumber || isNaN(pageNumber) || pageNumber < 1) {
+      throw new Error("Invalid page number");
+    }
+
     setPage(pageNumber);
   };
 
+  if (errorMessage)
+    return <h1 className="text-center m-5">Error : {errorMessage}</h1>;
   return (
     <div className="text-center bg-dark">
       <div className="container mt-0">
-        <h1 className="text-white mb-3"> Search Image... </h1>
+        <h1 className="text-white mb-3 "> Search Image... </h1>
         <div className="input-group mb-4">
           <input
             type="text"
@@ -83,7 +103,7 @@ function ImageGallery() {
                   <div key={photo.id} className="col-md-4 mb-4">
                     <Link
                       to={{
-                        pathname: `/SingleImageDetails/${photo.id}`,
+                        pathname: `/single-image-details/${photo.id}`,
                         search: `?query=${searchQuery}`,
                       }}
                       className="text-dark text-decoration-none"
@@ -111,7 +131,7 @@ function ImageGallery() {
           </>
         )}
 
-        {!loading && (
+        {!loading && photos.length !== 0 && (
           <div className="container mt-0">
             <div className="row justify-content-end">
               <div className="col-md-5">

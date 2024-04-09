@@ -1,21 +1,18 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import "./Style.css";
-import ImageGallery from "./pages/ImageGallery";
+import "./style.css";
+import ImageGallery from "./pages/imageGallery";
+import SingleImageDetails from "./pages/singleImageDetails";
 
-import SingleImageDetails from "./pages/SingleImageDetails";
 const App = () => {
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<ImageGallery />}></Route>
-
-        <Route
-          path="/SingleImageDetails/:id"
-          element={<SingleImageDetails />}
-        ></Route>
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/" element={<ImageGallery />} />
+      <Route
+        path="/single-image-details/:id"
+        element={<SingleImageDetails />}
+      />
+    </Routes>
   );
 };
 

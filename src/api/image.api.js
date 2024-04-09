@@ -23,11 +23,24 @@ const fetchData = async (url) => {
 };
 
 export const getPhotos = async (page, perPage, searchQuery) => {
-  const url = `https://api.pexels.com/v1/search?page=${page}&per_page=${perPage}&query=${searchQuery}`;
+  const validateQuery = searchQuery.trim();
+
+  if (!validateQuery) {
+    throw new Error("Search query cannot be empty..");
+  }
+
+  const url = `https://api.pexels.com/v1/search?page=${page}&per_page=${perPage}&query=${encodeURIComponent(
+    validateQuery
+  )}`;
+
   return fetchData(url);
 };
 
 export const getPhotoById = async (id) => {
+  if (!id || isNaN(id) || id <= 0) {
+    throw new Error("Empty Id not allow");
+  }
   const url = `https://api.pexels.com/v1/photos/${id}`;
+
   return fetchData(url);
 };
